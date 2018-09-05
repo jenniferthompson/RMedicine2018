@@ -22,7 +22,7 @@ layout: true
 ---
 
 ```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE, dpi = 72)
+knitr::opts_chunk$set(echo = FALSE, eval = FALSE, message = FALSE, dpi = 72)
 
 library(icon)      ## for FontAwesome icons (ozunconf17 project!)
 library(emo)       ## for emoji, obvs (github.com/hadley/emo)
@@ -104,7 +104,7 @@ class: center
 
 <br>
 
-```{r}
+```{r, eval = TRUE}
 knitr::include_graphics("images/rory_darknessdragons.gif")
 ```
 
@@ -112,9 +112,9 @@ knitr::include_graphics("images/rory_darknessdragons.gif")
 
 I love this quote from Julie Lowndes - a bit of forethought and planning can bring so much future benefit.
 
-But sometimes we may feel a bit like Rory Gilmore in her first semester here at Yale, maybe that it's a little overwhelming to think years from now when you have a PI with an abstract deadline next week.
+But sometimes we may feel a bit like Rory Gilmore in her first semester here at Yale, maybe that it's a little overwhelming to think years from now when you have an abstract deadline next week.
 
-With all the tools and "best practices" that exist for reproducible research, sometimes it can be overwhelming or feel like an all-or-nothing proposition - if you haven't given someone a full Docker image and every iota of code and data, what's the point? While this is certainly the ideal, it can be intimidating depending on your starting point and the time you have available. (In the case of that hypothetical pulmonary fellow who needs a conference abstract in a week, creating a fully reproducible masterpiece is not my immediate priority.)
+With all the tools and "best practices" that exist for reproducible research, sometimes it can be overwhelming or feel like an all-or-nothing proposition - if you haven't given someone a full Docker image and every iota of code and data, what's the point? While this is certainly the ideal, it can be intimidating depending on your starting point and the time you have available. (In the case of my hypothetical pulmonary fellow who needs a conference abstract in a week, creating a fully reproducible masterpiece is not my immediate priority.)
 
 ---
 
@@ -136,22 +136,7 @@ class: inverse, center, middle
 
 ???
 
-So the first couple of things I'll talk about may be things many of us are already doing, but I hope to either convince you if you're not, or give you some tips and resources to make things easier.
-
-The very first and I still think most powerful tool R has for reproducibility is RMarkdown, or knitr if you're a dedicated Latex user. Many of us probably use this for reporting, but I've become more and more convinced that we should use it for *recording* -
-
----
-
-background-image: url(images/leek_decisions.png)
-background-position: 50% 90%
-
-# Jeff Leek Made This <span style = "font-size: 50%;">[JSM 2018 talk](https://docs.google.com/presentation/d/1oCbf8NHpJSQAe6LoeD--wV-KbKbdGawrLHYJqwzfj_M/edit#slide=id.p)</span>
-
-???
-
-I love this diagram from Jeff Leek so much:
-
-Saying "we did multivariable logistic regression" only tells the reader one of many, many decisions you made in your analysis, which can be affected by all kinds of factors as Jeff points out. So I'm starting off by encouraging you to use R's literate programming tools for not only reporting, but also for things like exploratory data analysis that informs your modeling decisions, or writing simulations that get summarized in your final report.
+So the first thing I'll talk about is how to organize your project. This may feel kind of basic, but it has been really key for my sanity. And setting up our workflow well will come back to help us in a later segment, so stay tuned.
 
 ---
 
@@ -179,11 +164,13 @@ Using [RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207
 
 ???
 
-One more basic thing to think about as you get started is how you structure your files. <go over file structure> Here I've shown an example file structure using components from a real study. Keeping things organized is not only aesthetically and mentally pleasing, but makes things
+Here I've shown an example file structure with deidentified components for a real study that we have ongoing. This is pretty typical of what I need for my projects; you may need something different, but the point is to find an organized structure that works for you. I find it helpful to have a folder for my analysis datasets; a folder for my R scripts that usually have helper functions that I use in my primary RMarkdown report; and a folder for the publication or presentation versions of figures that I create. But the most important aspect is that one project equals one directory.
+
+When things are organized well, it's not only aesthetically and mentally pleasing, but makes things
 
 - easier to pass along to someone else, either to reproduce or take over
 - easier to recognize when you can reuse components for other projects
-- easier to actually do that
+- easier to actually reuse those components, because things are intentionally modular
 
 In my past life, I've dumped Rnw files for analyses spun off a parent study into one giant folder; I came to regret that fairly quickly, since we've been working off data from that study for a number of years. But by the time I realized it, organizing it and dealing with the file path fallout felt like more of a burden than staring at that long list of files every time I opened the folder. Learn from my past mistakes :)
 
@@ -202,7 +189,7 @@ If you haven't yet drunk the version control Kool-Aid, I'll give you some very p
 
 --
 <br><br><br>
-```{r, out.height = "250px", fig.align = "center"}
+```{r, eval = TRUE, out.height = "250px", fig.align = "center"}
 knitr::include_graphics("images/lorelai_coffeecynicism.gif")
 ```
 
@@ -235,7 +222,7 @@ Bonus points if you use `usethis` to turn your project into a fully transportabl
 [`usethis.r-lib.org`](http://usethis.r-lib.org/)
 <span style = "font-size: 75%;">*(authors: Hadley Wickham, Jenny Bryan)*</span>
 
-#### **Workflow/version control resources: Jenny Bryan on**
+#### **And also read these: Jenny Bryan on**
 
 - [Project-oriented workflow](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/)
 - [Naming things](https://speakerdeck.com/jennybc/how-to-name-files)
@@ -452,7 +439,7 @@ Going far too long without realizing you've made a major yet sneaky error in you
 
 .pull-right[
 
-```{r, out.height="200px"}
+```{r, eval = TRUE, out.height="200px"}
 knitr::include_graphics("images/rory_thoughtitworked.gif")
 ```
 
@@ -532,18 +519,31 @@ monthly_df %>%
   
 ```
 
+--
+
+.pull-left[
+
 ## Result: `r emo::ji("+1")`
 
 Returns our original data frame so we can move on down the pipeline!
+]
+
+.pull-right[
+```{r, eval = TRUE}
+knitr::include_graphics("images/rory_yesgood.gif")
+```
+]
 
 ???
 
-It's similar to `verify`, but `assertr`'s `assert` function comes with built-in predicate functions which perform common checks; in this case, we want to make sure that every monthly visit has a recorded date, using `not_na()`, and that all our cholesterol values fall within a reasonable range using `within_bounds()`. Here, our assertion discovers no problems, and we can continue with confidence.
+It's similar to `verify`, but `assertr`'s `assert` function comes with built-in predicate functions which perform common checks; in this case, we want to make sure that every monthly visit has a recorded date, using `not_na()`, and that all our cholesterol values fall within a reasonable range using `within_bounds()`.
+
+Here, our assertion discovers no problems, and we can continue with confidence.
 
 ---
 
 # You Decide
-### How Strict Your Assertions Are
+## How Strict Your Assertions Are
 
 .left-column[
 #### **Q:** What if you want to test assumptions, but keep going no matter what?
@@ -570,79 +570,9 @@ attr(newdf, "assertr_errors")
 
 Of course, sometimes you might want to know about an issue but still keep the pipeline going. The `error_fun` argument gives you control over how `assertr` behaves when the conditions are met or unmet.
 
-You have several options; in this case, I've set it to `error_append`. Using this option will allow the pipeline to keep going, and will return our original data.frame as though there were no problems, but it will add an `attribute` to that data.frame which includes all our errors.
+You have several options; in this case, I've run our original assertion, but set this argument to `error_append`. Using this option will allow the pipeline to keep going, and will return our original data.frame as though there were no problems, but it will add an `attribute` to that data.frame which includes all our errors.
 
-The tradeoff to this is that you do need to be paying attention: sink those warning messages to a text file or take some other tactic, so you don't defeat the purpose and miss a potential problem. But you're in control of how that happens!
-
-One more example:
-
----
-
-# Testing Wrangled Data
-
-#### Goal: Calculate the proportion of treatments each patient missed
-
-```{r, echo = TRUE, eval = FALSE}
-pct_missed <- monthly_df %>%
-  dplyr::group_by(study_id) %>%
-  dplyr::summarise(
-    prop_missed = mean(trt_missed)
-  ) %>%
-  dplyr::ungroup() %>%
-  assert(within_bounds(0, 1), prop_missed) #<<
-
-```
-
---
-
-```
-Column 'prop_missed' violates assertion 'within_bounds(0, 1)' 1 time
-    verb redux_fn           predicate      column index value
-1 assert       NA within_bounds(0, 1) prop_missed     3   3.5
-```
-
-We thought `trt_missed` was a 0/1 indicator, but it's actually a count. OOPS. But we never would have known!
-
-???
-
-We've checked our raw data and now want to calculate the proportion of treatments that each patient skipped, which we do by taking the mean of `trt_missed`, which looks to be a 0/1 indicator. Since it's a proportion, of course the end result should be somewhere between 0 and 1, so we include that assertion at the end of our pipeline.
-
-One patient has a value of 3.5, so clearly something went wrong somewhere. It turns out that `trt_missed` is a *count* of treatments missed each month, not a 0/1 indicator. But nothing threw an error, so we wouldn't have realized this until we got some weird value in a histogram or regression model!
-
-So we'll fix that step, then recheck this assertion...
-
----
-
-# Testing Wrangled Data
-
-```{r, echo = TRUE, results = "show"}
-pct_missed <- monthly_df %>%
-  dplyr::group_by(study_id) %>%
-  dplyr::summarise(
-    ## Each patient should have gotten 8 doses
-    prop_missed = sum(trt_missed, na.rm = TRUE) / 8 #<<
-  ) %>%
-  dplyr::ungroup() %>%
-  assert(within_bounds(0, 1), prop_missed) #<<
-
-```
-
-.pull-left[
-```{r, echo = TRUE}
-pct_missed
-
-```
-]
-
-.pull-right[
-```{r}
-knitr::include_graphics("images/rory_yesgood.gif")
-```
-]
-
-???
-
-Now everything seems to be working; all our values are in range.
+The tradeoff to this is that you do need to be paying attention: sink those error attributes messages to a text file or take some other tactic, so you don't defeat the purpose and miss a potential problem. But you're in control of how that happens!
 
 ---
 
@@ -654,7 +584,7 @@ knitr::include_url("https://ropensci.org/tutorials/assertr_tutorial/")
 
 ???
 
-You can perform more complex tasks than I've shown here, and if you're interested, I'd really recommend this `assertr` tutorial that Tony has put together with some great examples.
+Hopefully these basic examples have intrigued you enough to investigate further. If you're interested, I'd really recommend this `assertr` tutorial that Tony has put together with some great examples.
 
 ---
 
@@ -692,7 +622,7 @@ Much more at:
 - Will Landau's R/Pharma talk: [wlandau.github.io/drake-talk](wlandau.github.io/drake-talk)
 ]
 
-```{r, out.height = "150px", fig.align = "center"}
+```{r, eval = TRUE, out.height = "150px", fig.align = "center"}
 knitr::include_graphics("images/drake_info.svg")
 ```
 
@@ -700,7 +630,7 @@ knitr::include_graphics("images/drake_info.svg")
 
 Once your workflow is set up in an organized, sensible way, the `drake` package can take your reproducibility to the next level. I'm new to `drake` myself, and as soon as I sat down to try it out, I wished I'd had it available two years ago, when I first started work on a project that involves bootstrapping about twelve separate models.
 
-The point of `drake` is to know when something needs to be updated and when it needs to be left in peace. You set up your workflow and define a set of components, or "targets"; describe a "plan" that will either create or update these targets as needed; and then "make" the plan. `drake` knows which components to update and which to leave alone, so it takes care of any changes without wasting time or computing power on things that are already perfectly fine.
+The point of `drake` is to know when something needs to be updated and when it needs to be left in peace. You set up your workflow and define a set of components, or "targets"; describe a "plan" that will either create or update these targets as needed; and then "make" the plan. `drake` knows which components need to be updated due to changes you've made since the last `make`, and which are current and can be left alone. So it takes care of any changes without wasting time or computing power on things that are already perfectly fine.
 
 `drake`'s author Will Landau and other contributors have put together some fantastic documentation, including a web site and a full manual. To get started, I'd recommend checking out Will's recent talk at R/Pharma, which was all about `drake`. It's much more powerful than I have time to go into here.
 
@@ -728,7 +658,7 @@ So, how exactly do we create that infrastructure?
 ### Guidelines & resources for developers
 [`ropensci.github.io/dev_guide`](https://ropensci.github.io/dev_guide/)
 
-```{r, echo = FALSE}
+```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("images/ropensci_devguide.png", dpi = 72)
 ```
 ]
@@ -739,7 +669,7 @@ knitr::include_graphics("images/ropensci_devguide.png", dpi = 72)
 - Blog posts, social media
 - Searchable database
 
-```{r, echo = FALSE}
+```{r, eval = TRUE, echo = FALSE}
 knitr::include_graphics("images/ropensci_search.png", dpi = 72)
 ```
 ]
@@ -762,11 +692,11 @@ If you do successfully submit your package for review, you'll get the benefits o
 ]
 
 .right-column[
-```{r}
+```{r, eval = TRUE}
 knitr::include_graphics("images/skimr_review.png")
 ```
 
-```{r, fig.align = "right", out.height = "50px"}
+```{r, eval = TRUE, fig.align = "right", out.height = "50px"}
 knitr::include_graphics("https://badges.ropensci.org/87_status.svg")
 ```
 ]
@@ -801,14 +731,14 @@ Welcoming, diverse community that
 
 Finally, we create the social infrastructure by putting together this fantastic community of people with really diverse social and professional backgrounds, all interested in making their work more reproducible and more open. By facilitating these relationships and creating a welcoming, friendly, approachable culture, we increase what we're able to produce and create more and stronger collaboration.
 
-I love this quote from Will Landau, who's the author of `drake`: "rOpenSci combines expertise and approachability, and its community inspires people to collaborate as the best versions of themselves." I saw Will tweet that to Stef Butland, our community manager, and he summed up my feelings so well that I asked if I could quote him!
+This quote from Will Landau sums up my feelings so well that I asked if I could just quote him: "rOpenSci combines expertise and approachability, and its community inspires people to collaborate as the best versions of themselves."
 
 ---
 
 # Info/Get Involved
 
 .left-column[
-```{r}
+```{r, eval = TRUE}
 knitr::include_graphics("images/ropensci_icon_short.png")
 
 ```
@@ -840,7 +770,7 @@ class: middle
 ]
 
 .pull-right[
-```{r}
+```{r, eval = TRUE}
 knitr::include_graphics("images/logan_fun.gif")
 ```
 
