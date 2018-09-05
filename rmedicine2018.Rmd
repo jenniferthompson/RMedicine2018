@@ -1,7 +1,7 @@
 ---
 title: "The Life & Times of a Reproducible Clinical Project"
 author: "Jennifer L Thompson, MPH<br><span style = 'font-size: 50%;'>Vanderbilt University Medical Center<br>Department of Biostatistics + Center for Critical Illness, Brain Dysfunction & Survivorship</span>"
-date: 'R/Medicine 2018 • Yale University<br><br>`r icon::fa("link")` [bit.ly/something](bit.ly/something)<br>`r icon::fa("twitter")` [jent103](https://twitter.com/jent103)'
+date: 'R/Medicine 2018 • Yale University<br><br>`r icon::fa("link")` [bit.ly/jlt-rmed2018](bit.ly/jlt-rmed2018)<br>`r icon::fa("twitter")` [jent103](https://twitter.com/jent103)'
 output:
   xaringan::moon_reader:
     chakra: libs/remark-latest.min.js
@@ -17,7 +17,7 @@ output:
 
 layout: true
   
-<div class="my-footer"><span>bit.ly/something • @jent103</span></div> 
+<div class="my-footer"><span>bit.ly/jlt-rmed2018 • @jent103</span></div> 
 
 ---
 
