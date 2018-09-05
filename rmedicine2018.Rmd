@@ -1,0 +1,847 @@
+---
+title: "The Life & Times of a Reproducible Clinical Project"
+author: "Jennifer L Thompson, MPH<br><span style = 'font-size: 50%;'>Vanderbilt University Medical Center<br>Department of Biostatistics + Center for Critical Illness, Brain Dysfunction & Survivorship</span>"
+date: 'R/Medicine 2018 • Yale University<br><br>`r icon::fa("link")` [bit.ly/something](bit.ly/something)<br>`r icon::fa("twitter")` [jent103](https://twitter.com/jent103)'
+output:
+  xaringan::moon_reader:
+    chakra: libs/remark-latest.min.js
+    css: [xaringan-themer.css, my-theme.css]
+    nature:
+      countIncrementalSlides: false
+      titleSlideClass: ["left", "middle", "inverse"]
+      highlightLines: true
+      highlightStyle: solarized-dark
+    includes:
+      in_header: header.html
+---
+
+layout: true
+  
+<div class="my-footer"><span>bit.ly/something • @jent103</span></div> 
+
+---
+
+```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE, dpi = 72)
+
+library(icon)      ## for FontAwesome icons (ozunconf17 project!)
+library(emo)       ## for emoji, obvs (github.com/hadley/emo)
+library(tidyverse) ## for data wrangling
+library(assertr)   ## for testing data
+
+```
+
+```{r xaringan-themer, include = FALSE}
+library(xaringanthemer)
+mono_light(
+  base_color = "#125972", ## picked to coordinate with rOpenSci logo
+  code_highlight_color = "#c0e8f5",
+  link_color = "#197b9e",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Droid Mono")
+)
+```
+
+# Reproducibility, for Scientific Reasons
+
+### Given your data, someone else can reproduce your exact results
+
+- Increased trustworthiness
+- More rigorous, reliable science
+- Learning more from one another's work
+
+*"Science should be ‘show me’, not ‘trust me’; it should be ‘help me if you can’, not ‘catch me if you can’."*
+
+-- *Philip B. Stark, [Nature 2018](https://www.nature.com/articles/d41586-018-05256-0)*
+
+???
+
+This is my informal definition for what we mean by computational reproducibility, which is, of course, a hot topic, and for good reason. We all want the work we do to be both meaningful and correct, and want to be able to discern other research that's also meaningful and correct. Others, including some in this audience, have done a ton of work to develop philosophies and tools to encourage reproducibility.
+
+---
+
+# Reproducibility, for Personal Reasons
+
+"Did I mention that subjects with IDs > 100 are actually kangaroos and should be excluded?"
+
+<hr>
+
+I won the lottery `r emo::ji("wave")`; now my coworker is taking over
+
+<hr>
+
+Journal reviews back after 8 months! Time for revisions!
+
+<hr>
+
+"How does that patient have 15 months of treatment when we only followed people for 12 months?"
+
+???
+
+Our reasons for pursuing reproducibility don't have to be entirely altruistic or philosophical. The same tools that make it easier for *others* to reproduce your analyses also make it easier for you to reproduce them, and have more confidence in your own results.
+
+True story: Someone asked me last month for a script I started writing in 2009
+
+Even worse: This script was related to a project with five different data sources and multiple data management scripts
+
+Past me was not living her most reproducible life :( - she had not considered this scenario nine years ago when starting this project. Current me is a bit more experienced and knows to expect the unexpected.
+
+All these tools we'll talk about today benefit from **forethought** - the more we can think ahead, the better off we'll be.
+
+---
+
+class: center
+
+# Plan Ahead to Live Your Best (Research) Life
+
+<br>
+*“It’s not thinking, ‘This is easiest for myself right now.’ It’s thinking, ‘When I’m working on this next week, next month, right before I graduate — **how do I set myself up so that it’s easier later**?’*
+
+-- *Julia Stewart Lowndes in ["A toolkit for data transparency takes shape," Nature 20 August 2018](https://www.nature.com/articles/d41586-018-05990-5)*
+
+--
+
+<br>
+
+```{r}
+knitr::include_graphics("images/rory_darknessdragons.gif")
+```
+
+???
+
+I love this quote from Julie Lowndes - a bit of forethought and planning can bring so much future benefit.
+
+But sometimes we may feel a bit like Rory Gilmore in her first semester here at Yale, maybe that it's a little overwhelming to think years from now when you have a PI with an abstract deadline next week.
+
+With all the tools and "best practices" that exist for reproducible research, sometimes it can be overwhelming or feel like an all-or-nothing proposition - if you haven't given someone a full Docker image and every iota of code and data, what's the point? While this is certainly the ideal, it can be intimidating depending on your starting point and the time you have available. (In the case of that hypothetical pulmonary fellow who needs a conference abstract in a week, creating a fully reproducible masterpiece is not my immediate priority.)
+
+---
+
+class: inverse, center, middle
+
+## TODAY'S GOAL
+
+Demonstrate several R tools & practices which can help us not only improve our scientific rigor, but make our lives more pleasant throughout the course of a project.
+
+???
+
+BUT! We can use these tools incrementally or all together - anything we do will help, and I've learned this from my own experience. My goal today: show you how these tools built for increasing the level or ease of reproducibility have been helpful in my work in clinical research. Your goal: Take what applies to and interests you and mold it to your own life (then share those ideas so we can learn from you!). Some of you may be using some or all of these tools, but hopefully we can all learn at least one new thing!
+
+---
+
+class: inverse, center, middle
+
+# Phase I:<br>Set Yourself Up for Success
+
+???
+
+So the first couple of things I'll talk about may be things many of us are already doing, but I hope to either convince you if you're not, or give you some tips and resources to make things easier.
+
+The very first and I still think most powerful tool R has for reproducibility is RMarkdown, or knitr if you're a dedicated Latex user. Many of us probably use this for reporting, but I've become more and more convinced that we should use it for *recording* -
+
+---
+
+background-image: url(images/leek_decisions.png)
+background-position: 50% 90%
+
+# Jeff Leek Made This <span style = "font-size: 50%;">[JSM 2018 talk](https://docs.google.com/presentation/d/1oCbf8NHpJSQAe6LoeD--wV-KbKbdGawrLHYJqwzfj_M/edit#slide=id.p)</span>
+
+???
+
+I love this diagram from Jeff Leek so much:
+
+Saying "we did multivariable logistic regression" only tells the reader one of many, many decisions you made in your analysis, which can be affected by all kinds of factors as Jeff points out. So I'm starting off by encouraging you to use R's literate programming tools for not only reporting, but also for things like exploratory data analysis that informs your modeling decisions, or writing simulations that get summarized in your final report.
+
+---
+
+background-image: url(images/filestructure.png)
+background-size: 35%
+background-position: 15% 85%
+
+# Organized File Structure -> Happier Life
+
+.pull-right[
+
+Make it easy to
+
+1. Keep yourself organized
+2. Allow someone else *(including your future self!)* to use your code
+3. Reuse or adapt components for other projects
+
+Using [RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) and version control can help! Projects:
+
+- Allow >1 project open at once
+- Allow project-specific options
+- Encourage one project -> one directory philosophy
+- Facilitate version control
+]
+
+???
+
+One more basic thing to think about as you get started is how you structure your files. <go over file structure> Here I've shown an example file structure using components from a real study. Keeping things organized is not only aesthetically and mentally pleasing, but makes things
+
+- easier to pass along to someone else, either to reproduce or take over
+- easier to recognize when you can reuse components for other projects
+- easier to actually do that
+
+In my past life, I've dumped Rnw files for analyses spun off a parent study into one giant folder; I came to regret that fairly quickly, since we've been working off data from that study for a number of years. But by the time I realized it, organizing it and dealing with the file path fallout felt like more of a burden than staring at that long list of files every time I opened the folder. Learn from my past mistakes :)
+
+If you're an RStudio user, using Projects can be really helpful here. The first reason I started using them was the ability to have more than one RStudio session open at once with no headaches. But now, I appreciate just as much that they encourage a "one project, one directory" mindset. Each analysis gets its own directory, which gets one project file. Even more helpful is that this is also the structure that works best with version control, and Projects have several features that help facilitate getting git or other version control set up.
+
+If you haven't yet drunk the version control Kool-Aid, I'll give you some very practical ways that it's helped me:
+
+---
+
+# Reasons to Use Version Control <i class="fas fa-code-branch"></i>
+
+1. Encourages modular thinking and organization
+1. Easier to know when and why something changed
+1. Documents/timestamps your work
+1. Easier to collaborate/work on multiple machines
+
+--
+<br><br><br>
+```{r, out.height = "250px", fig.align = "center"}
+knitr::include_graphics("images/lorelai_coffeecynicism.gif")
+```
+
+???
+
+1. Thinking in terms of git commits has helped me make additions and changes in a more thoughtful, structured way - compare this to the "go to a meeting, come out with a list of changes and make them all at once" approach that gets confusing and tangled.
+1. When you realize something in your results has changed, it's an easier and more systematic process to figure out why. You can roll back to a previous version, see what happens, and hopefully eventually either fix the issue or explain why the change was necessary.
+1. Using version control gives you a bit of insurance: You can prove that you stuck to your analysis plan (which is hopefully version controlled itself!) and didn't add a bunch of post hoc analyses after you broke a treatment blind, or that you only added a dozen sensitivity analyses after the reviewers requested them.
+
+Basically, I use version control because I'm an optimistic cynic: One day, something will go wrong or change, or someone will question me, and this is a really helpful tool for managing those situations.
+
+---
+
+background-image: url(images/usethis_hex.png)
+background-size: 15%
+background-position: 95% 5%
+
+# Use `usethis` for This
+
+`usethis` is particularly helpful for creating R packages, but has<br>
+plenty of functions that will help you set up a general project:
+
+- Projects (`create_project()`)
+- Standardized file structures (`use_r()`, `use_data_raw()`)
+- git and GitHub (`use_git()`, `use_github()`)
+- And more!
+
+Bonus points if you use `usethis` to turn your project into a fully transportable package!
+
+[`usethis.r-lib.org`](http://usethis.r-lib.org/)
+<span style = "font-size: 75%;">*(authors: Hadley Wickham, Jenny Bryan)*</span>
+
+#### **Workflow/version control resources: Jenny Bryan on**
+
+- [Project-oriented workflow](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/)
+- [Naming things](https://speakerdeck.com/jennybc/how-to-name-files)
+- [Version control](https://peerj.com/preprints/3159/)
+
+???
+
+The `usethis` package is basically built to make setting up all of these details, like git repositories and file structures, a bit easier. Particularly with git, and particularly if you're collaborating, it can be easy to mess this up by doing things in an order that isn't ideal, for example (I know this from personal experience). So I'd definitely recommend checking out this package, *particularly* if you build R packages, as it really shines when setting up documentation, licensing, lots of details like that. My ideal is to turn an analysis project itself into a transportable, loadable package, but I'll admit I haven't actually followed through on that yet - if you have I'd love to talk to you!
+
+Of course Jenny Bryan has written some very helpful posts about workflows and version control, and if you haven't read them I'd absolutely recommend you do.
+
+---
+
+class: inverse, center, middle
+
+# Phase II:<br>Access data programmatically
+
+???
+
+By "accessing data programmatically" I mean keeping data stored in some sort of database that is not CSV files or spreadsheets floating around, and accessing it via code of some kind rather than manually exporting or saving email attachments.
+
+This is an ideal, of course, and depending on your situation may or may not be tenable, but I hope to inspire you to pursue it whenever possible!
+
+---
+
+.pull-left[
+## Tired
+
+**Many files, potentially with different versions, from disparate sources, manually created/exported**
+
+- No one *(including future you)* knows for certain what you did
+- Potential organizational nightmare
+- Manually exporting from data source is a potential pain point with plenty of room for error
+<br><br><br>
+### `r icon::fa("file-excel", size = 3, pull = "left")` `r icon::fa("file-excel", size = 2, pull = "left")` `r icon::fa("file-excel", size = "lg", pull = "left")` `r icon::fa("file-excel", size = 1, pull = "left")`
+]
+
+.pull-right[
+## Wired
+
+**Accessing your data programmatically<br>*(REDCap API, SQL database...)***
+
+- Track exactly what data you access + all steps taken to manipulate it
+- Raw data remains in original state/location
+- Rerun same script(s) throughout data collection -> use most current data to monitor, clean, explore
+
+# `r icon::fa("database", size = 2, pull = "right")`
+
+]
+
+???
+
+At Vanderbilt we primarily use REDCap for most of our projects; before REDCap existed, our group used a system that involved me manually exporting about 25 forms as separate CSVs every time I went to update the data. It was, as you might imagine, not the most fun part of my day, and more importantly it was rife with opportunity for error. What if I accidentally skipped one or saved one with the wrong name? And I know many of us have had data come in the form of multiple spreadsheets with illuminating names like "data.xlsx."
+ 
+APIs might be a bit intimidating to folks who are used to receiving data in spreadsheets that they can open and see. I empathize with that, but after having Excel reformat dates and not being able to remember years later which spreadsheet contained what, or realizing there's data on a second worksheet I missed, I've become an API believer.
+
+Writing code to extract data via APIs allows you to track exactly which data points you downloaded. All your original data remains untouched in a safe location, and there's a complete record of what you did to transform or summarize it. So anyone with access to that database can reproduce your work later if needed.
+
+---
+
+# Example: REDCap API
+
+```{r, echo = TRUE}
+library(httr)
+
+monthly_post <- httr::POST(
+  url = "https://redcap.vanderbilt.edu/api/",
+  body = list(
+    token = Sys.getenv("MYTOKEN"), ## API token gives you permission #<<
+    content = "record",            ## export *records*
+    format = "csv",                ## export as *CSV*
+    forms = "monthly_data",        ## which form(s)?
+    fields = c("study_id"),        ## additional fields
+    events = paste(sprintf("month_%s_arm_1", 1:3), collapse = ","),
+      ## all 3 monthly visit events
+    rawOrLabel = "label"           ## export factor *labels* v codes
+  )
+)
+
+monthly_df <- read.csv(
+  text = as.character(monthly_post),
+  stringsAsFactors = FALSE, na.strings = ""
+)
+
+```
+
+???
+
+Being at Vanderbilt, our group uses REDCap basically exclusively, so here I've shown an example of how I use the `httr` package to extract data via the REDCap API.
+
+My toy example here is from a longitudinal study where we had a baseline visit where we collected demographics and baseline characteristics; three monthly visits where we collected treatment information and longitudinal data; and a study completion visit. I'm exporting this data in order to summarize some of the monthly values.
+
+I'm told that REDCap is a little weird when it comes to the API, so if you use a different data capture system your code might look a bit different. My goal with this slide is not to teach you how REDCap works, since some of you may use it and some may not, but to demonstrate some key points:
+
+- First, this is more secure than passing around Excel spreadsheets, since you need an individualized API token to access the database; I usually store my token in my .Renviron file so that I can share the extraction code freely as needed without compromising security.
+
+---
+
+# Example: REDCap API
+
+```{r, echo = TRUE, eval = FALSE}
+library(httr)
+
+monthly_post <- httr::POST(
+  url = "https://redcap.vanderbilt.edu/api/",
+  body = list(
+    token = Sys.getenv("MYTOKEN"), ## API token gives you permission
+    content = "record",            ## export *records*
+    format = "csv",                ## export as *CSV*
+    forms = "monthly_data",        ## which form(s)?                #<<
+    fields = c("study_id"),        ## additional fields             #<<
+    events = paste(sprintf("month_%s_arm_1", 1:3), collapse = ","), #<<
+      ## all 3 monthly visit events
+    rawOrLabel = "label"           ## export factor *labels* v codes
+  )
+)
+
+monthly_df <- read.csv(
+  text = as.character(monthly_post),
+  stringsAsFactors = FALSE, na.strings = ""
+)
+
+```
+
+???
+
+- Next, these lines tell me exactly what data I exported - there's a **record** of exactly what we did. Here, I chose to export only the monthly data collection form, along with the patient ID - that's collected on a separate form, so I need to explicitly state that.
+
+---
+
+# Example: REDCap API
+
+```{r, echo = TRUE, eval = FALSE}
+library(httr)
+
+monthly_post <- httr::POST(
+  url = "https://redcap.vanderbilt.edu/api/",
+  body = list(
+    token = Sys.getenv("MYTOKEN"), ## API token gives you permission
+    content = "record",            ## export *records*
+    format = "csv",                ## export as *CSV*
+    forms = "monthly_data",        ## which form(s)?                
+    fields = c("study_id"),        ## additional fields             
+    events = paste(sprintf("month_%s_arm_1", 1:3), collapse = ","), 
+      ## all 3 monthly visit events
+    rawOrLabel = "label"           ## export factor *labels* v codes #<<
+  )
+)
+
+monthly_df <- read.csv(
+  text = as.character(monthly_post),
+  stringsAsFactors = FALSE, na.strings = ""
+)
+
+```
+
+???
+
+- Using APIs can give you **flexibility**. This last line in the `httr` call gives an example of an option you can give REDCap using the API - here I'm telling it I want text labels for categorical variables and not the numeric codes, but there may be times when you want the opposite. You can choose based on your needs for any given export.
+
+These last few lines show how to convert the POST object you get from the API to a data.frame that we can continue working with.
+
+---
+
+# Now We Can...
+
+Once the initial script or report is built, we can - **with one line of code** - do the following, assured that we're using the most recently updated data:
+
+1. Frequently monitor accuracy & completion during prospective data collection ([tutorial on GitHub](https://github.com/jenniferthompson/DataCleanExample))
+1. Use API + RMarkdown to easily run analyses that happen repeatedly *during* prospective data collection:
+    - NIH or DSMB reports
+    - Study monitoring
+        - Are you executing the study you planned to do?
+        - Enrollment targets, protocol pain points, etc?
+        - (We [use `flexdashboard` for this](https://jenthompson.me/2018/02/09/flexdashboards-monitoring/))
+
+--
+
+### Resources for Working with APIs
+
+- [`httr`](https://cran.r-project.org/package=httr), for general API work
+- [`redcapAPI`](https://cran.r-project.org/package=redcapAPI) by Benjamin Nutter
+- rOpenSci maintains several packages for working with various APIs; search at [ropensci.org/packages](https://ropensci.org/packages/)
+
+???
+
+Once we're using the API to export data, the world is our oyster - we don't have to worry about waiting on updated spreadsheets or manually extracting data. I use this capability to:
+
+- Work with our research coordinators to clean our prospectively collected data every few months; this is particularly helpful in long multicenter studies where we inevitably have staff turnover. There's a tutorial for our process linked from my web site if you're interested in that.
+- Combining the API with RMarkdown makes generating a lot of repeated analyses and reports much easier for prospective clinical research - I can create our NIH progress reports with literally one line of code, and do a DSMB report once a year that only gets changed as needed. We also use the `flexdashboard` format of RMarkdown to monitor our studies, making sure we're hitting enrollment targets and looking for potential pain points with protocol aspects like wearing devices or drawing blood. Again, I can run those reports once a week with one line of code, assured that it has the most current data entered.
+
+If you're new to working with APIs, the `httr` package has some great vignettes; if you do use REDCap, Benjamin Nutter has written a wrapper package specifically for the REDCap API that's particularly useful if you're doing more than just exporting the data. If you're using other sources of web data, rOpenSci has a collection of packages for working with APIs that you should investigate.
+
+---
+
+class: inverse, center, middle
+
+# Phase III:<br>Test Your (Data) Assumptions
+
+???
+
+If you develop software, you're likely already familiar with the concept of testing; if you do any data wrangling, you've definitely done this informally - checked to see if your calculated age is negative, for example. So what I'll encourage in the next few slides is a *formal* way to incorporate those practices into data exporting and wrangling. Testing our assumptions about our data formally can take some time to set up, but leads to more confidence in both our raw data and the values we calculate from it.
+
+---
+
+# Testing Data with `assertr`
+
+.pull-left[
+
+### **Sinking feeling *(n)***:
+
+Going far too long without realizing you've made a major yet sneaky error in your data wrangling.
+]
+
+.pull-right[
+
+```{r, out.height="200px"}
+knitr::include_graphics("images/rory_thoughtitworked.gif")
+```
+
+]
+
+--
+
+With [`assertr`](https://github.com/ropensci/assertr) *(author: Tony Fischetti)*, we can
+
+- Include assertions in scripts that
+    - Load raw data - *is it what we expect?*
+    - Create analysis datasets - *is our code doing what we expect?*
+- Discover problems **early**
+- Be more **confident** in your data wrangling + analysis
+
+???
+
+Hopefully I'm not the only who's had this experience: You've done your data wrangling, everything looks OK, and then one day someone asks the exact right question that allows you to uncover a mistake you made.
+
+The `assertr` package helps us avoid this by providing ways to proactively make **assertions** about our data. We can do this when reading in raw data, to make sure we understand the data we're dealing with and that the data fits the conventions we've established - for example, maybe you have multiple spreadsheets from different sites, and some use 0/1 coding while others use No/Yes coding.
+
+We can also do this after doing some data management, to make sure our raw data and our code are working together as well as we'd expect. Using these assertions can help us discover special cases or unmet assumptions earlier, and be more confident in our data management, eventual analysis and conclusions.
+
+So let's see an example!
+
+---
+
+# Checking Raw Data
+
+```{r, echo = TRUE, eval = FALSE}
+library(assertr)
+
+## Creatinine must be <=10
+monthly_df %>%
+  verify(creat_m <= 10)
+  
+```
+.left-column[
+### Result: `r emo::ji("-1")`
+
+Pipeline stops and prints an informative message
+]
+
+.right-column[
+```
+verification [creat_m <= 10] failed! (1 failure)
+
+    verb redux_fn     predicate column index value
+1 verify       NA creat_m <= 10     NA     5    NA
+```
+```{r, echo = TRUE}
+monthly_df[5, c("study_id", "redcap_event_name", "creat_m")]
+```
+]
+
+???
+
+In our example study, we measure creatinine monthly, and believe that any creatinine above 10 must be some kind of data issue. So we use `assertr`'s `verify` function at the beginning of a data management pipeline to "verify" that that assumption is true. If that condition is met, the function will return the original data.frame, and we can continue with our data management.
+
+Of course, this being an example, the condition is *not* met. `verify` throws an error and stops our pipeline, and prints an informative message showing us that the fifth row in our data.frame violates this assumption. That information is enough to help us do some detective work - in this case, my most likely guess is that someone forgot a decimal point. We can work with the PI or the data entry team to resolve the issue. Once it's resolved and we're using the updated data, this same pipeline will run with no issue.
+
+One note before we move on: If you're not a pipeline user, `assertr` certainly works with base R as well! It's built to work nicely within pipelines but you can use it no matter your preference.
+
+`verify(monthly_df, is.na(creat_m) | creat_m <= 10)`
+
+---
+
+# Checking Raw Data
+
+```{r, echo = TRUE, eval = FALSE}
+monthly_df %>%
+  ## Visit date *must* be entered;
+  ##  HDL, LDL must be within range
+  assert(not_na, date_visit_m) %>%
+  assert(within_bounds(25, 95), hdl_m) %>%
+  assert(within_bounds(1, 200), ldl_m)
+  
+```
+
+## Result: `r emo::ji("+1")`
+
+Returns our original data frame so we can move on down the pipeline!
+
+???
+
+It's similar to `verify`, but `assertr`'s `assert` function comes with built-in predicate functions which perform common checks; in this case, we want to make sure that every monthly visit has a recorded date, using `not_na()`, and that all our cholesterol values fall within a reasonable range using `within_bounds()`. Here, our assertion discovers no problems, and we can continue with confidence.
+
+---
+
+# You Decide
+### How Strict Your Assertions Are
+
+.left-column[
+#### **Q:** What if you want to test assumptions, but keep going no matter what?
+#### **A:** `error_fun`
+]
+
+--
+
+.right-column[
+```{r, echo = TRUE}
+## Maybe it's OK if creatinine is super high
+newdf <- monthly_df %>%
+  verify(creat_m <= 10, error_fun = error_append) #<<
+
+attr(newdf, "assertr_errors")
+  
+```
+
+### Result: `r emo::ji("expressionless_face")`
+
+]
+
+???
+
+Of course, sometimes you might want to know about an issue but still keep the pipeline going. The `error_fun` argument gives you control over how `assertr` behaves when the conditions are met or unmet.
+
+You have several options; in this case, I've set it to `error_append`. Using this option will allow the pipeline to keep going, and will return our original data.frame as though there were no problems, but it will add an `attribute` to that data.frame which includes all our errors.
+
+The tradeoff to this is that you do need to be paying attention: sink those warning messages to a text file or take some other tactic, so you don't defeat the purpose and miss a potential problem. But you're in control of how that happens!
+
+One more example:
+
+---
+
+# Testing Wrangled Data
+
+#### Goal: Calculate the proportion of treatments each patient missed
+
+```{r, echo = TRUE, eval = FALSE}
+pct_missed <- monthly_df %>%
+  dplyr::group_by(study_id) %>%
+  dplyr::summarise(
+    prop_missed = mean(trt_missed)
+  ) %>%
+  dplyr::ungroup() %>%
+  assert(within_bounds(0, 1), prop_missed) #<<
+
+```
+
+--
+
+```
+Column 'prop_missed' violates assertion 'within_bounds(0, 1)' 1 time
+    verb redux_fn           predicate      column index value
+1 assert       NA within_bounds(0, 1) prop_missed     3   3.5
+```
+
+We thought `trt_missed` was a 0/1 indicator, but it's actually a count. OOPS. But we never would have known!
+
+???
+
+We've checked our raw data and now want to calculate the proportion of treatments that each patient skipped, which we do by taking the mean of `trt_missed`, which looks to be a 0/1 indicator. Since it's a proportion, of course the end result should be somewhere between 0 and 1, so we include that assertion at the end of our pipeline.
+
+One patient has a value of 3.5, so clearly something went wrong somewhere. It turns out that `trt_missed` is a *count* of treatments missed each month, not a 0/1 indicator. But nothing threw an error, so we wouldn't have realized this until we got some weird value in a histogram or regression model!
+
+So we'll fix that step, then recheck this assertion...
+
+---
+
+# Testing Wrangled Data
+
+```{r, echo = TRUE, results = "show"}
+pct_missed <- monthly_df %>%
+  dplyr::group_by(study_id) %>%
+  dplyr::summarise(
+    ## Each patient should have gotten 8 doses
+    prop_missed = sum(trt_missed, na.rm = TRUE) / 8 #<<
+  ) %>%
+  dplyr::ungroup() %>%
+  assert(within_bounds(0, 1), prop_missed) #<<
+
+```
+
+.pull-left[
+```{r, echo = TRUE}
+pct_missed
+
+```
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("images/rory_yesgood.gif")
+```
+]
+
+???
+
+Now everything seems to be working; all our values are in range.
+
+---
+
+# For More: [`assertr` tutorial](https://ropensci.org/tutorials/assertr_tutorial/)
+
+```{r}
+knitr::include_url("https://ropensci.org/tutorials/assertr_tutorial/")
+```
+
+???
+
+You can perform more complex tasks than I've shown here, and if you're interested, I'd really recommend this `assertr` tutorial that Tony has put together with some great examples.
+
+---
+
+class: inverse, center, middle
+
+# Phase IV:<br>Take Advantage of That Workflow
+
+???
+
+If your project is truly straightforward, just a bit of data wrangling and analysis, paying a lot of attention to your file structure and workflow may not have lots of payoff for you, but in my experience projects can get complex quickly. In this case, there are some powerful tools that can help us take advantage of that structure we worked on earlier.
+
+---
+
+background-image: url(images/drake_hex.png)
+background-size: 15%
+background-position: 95% 5%
+
+# `drake`
+
+Built to encourage and enable efficient, reproducible workflows
+
+.pull-left[
+1. Set up a workflow made of separate components
+1. Describe the `plan` that will create/update these `targets`
+1. `make()` the `plan`
+    - `drake` knows which components are up to date, which to update
+    - Full reproducibility without unnecessary rebuilding
+]
+
+.pull-right[
+Much more at:
+
+- [ropensci.github.io/drake](https://ropensci.github.io/drake/)
+- [`drake` manual](https://ropenscilabs.github.io/drake-manual/)
+- Will Landau's R/Pharma talk: [wlandau.github.io/drake-talk](wlandau.github.io/drake-talk)
+]
+
+```{r, out.height = "150px", fig.align = "center"}
+knitr::include_graphics("images/drake_info.svg")
+```
+
+???
+
+Once your workflow is set up in an organized, sensible way, the `drake` package can take your reproducibility to the next level. I'm new to `drake` myself, and as soon as I sat down to try it out, I wished I'd had it available two years ago, when I first started work on a project that involves bootstrapping about twelve separate models.
+
+The point of `drake` is to know when something needs to be updated and when it needs to be left in peace. You set up your workflow and define a set of components, or "targets"; describe a "plan" that will either create or update these targets as needed; and then "make" the plan. `drake` knows which components to update and which to leave alone, so it takes care of any changes without wasting time or computing power on things that are already perfectly fine.
+
+`drake`'s author Will Landau and other contributors have put together some fantastic documentation, including a web site and a full manual. To get started, I'd recommend checking out Will's recent talk at R/Pharma, which was all about `drake`. It's much more powerful than I have time to go into here.
+
+So! You may have noticed that several times I've referenced rOpenSci, and you may or may not be wondering what that is.
+
+---
+
+class: center, middle
+
+# `r knitr::include_graphics("images/ropensci_icon_lettering.png")`
+
+#<i class="fas fa-code fa-2x"></i>&nbsp;&nbsp;&nbsp;<i class="fas fa-plus fa-sm vertical-align: 75%"></i>&nbsp;&nbsp;&nbsp;<i class="fas fa-users fa-2x"></i>
+
+???
+
+rOpenSci is an organization that creates the **technical** and **social** infrastructure to empower a community of people interested in improving scientific research via increased reproducibility and transparency.
+
+So, how exactly do we create that infrastructure?
+
+---
+
+# <i class="fas fa-code fa-lg"></i> Software
+
+.pull-left[
+### Guidelines & resources for developers
+[`ropensci.github.io/dev_guide`](https://ropensci.github.io/dev_guide/)
+
+```{r, echo = FALSE}
+knitr::include_graphics("images/ropensci_devguide.png", dpi = 72)
+```
+]
+
+.pull-right[
+### Discoverability
+
+- Blog posts, social media
+- Searchable database
+
+```{r, echo = FALSE}
+knitr::include_graphics("images/ropensci_search.png", dpi = 72)
+```
+]
+
+???
+
+The first piece is through **software**. If you're a package developer, rOpenSci has an excellent manual to guide you through best practices in development and maintenance. This is really useful whether or not you submit your package for review with rOpenSci.
+
+If you do successfully submit your package for review, you'll get the benefits of more discoverability: for example, rOpenSci's web site has a searchable list of all its packages, and houses material like the `assertr` tutorial I linked to earlier.
+
+---
+
+# <i class="fas fa-check-square fa-lg"></i> Peer Review
+
+#### **Goal:** Bring the best facets of academic peer review to software, in a transparent, non-adversarial process
+
+.left-column[
+- **Developers:**<br>Feedback on design; visibility
+- **Reviewers:**<br>Improve a package; learn about design & development
+]
+
+.right-column[
+```{r}
+knitr::include_graphics("images/skimr_review.png")
+```
+
+```{r, fig.align = "right", out.height = "50px"}
+knitr::include_graphics("https://badges.ropensci.org/87_status.svg")
+```
+]
+
+???
+
+That peer review process is the second piece of the rOpenSci puzzle. We review packages that fall within the scope of enabling and encouraging reproducible research and managing the data life cycle.
+
+*Developers* get the benefit of feedback on design and usability, as well as additional visibility from rOpenSci blog posts. *Reviewers* get to contribute to the community, help improve a package, and almost certainly learn a lot as they do so. I was one of the reviewers for the `skimr` package, which is really fantastic, by the way, and learned a lot during the process by thinking about things like package API design.
+
+---
+
+# <i class="fas fa-users fa-lg"></i> Community
+
+Welcoming, diverse community that
+
+- Builds capacity of users & developers
+- Fosters pride in members' work
+- Advocates for data sharing, reusable software
+- My experience: This culture and expectation leads to
+    - More & better collaboration
+    - Better products
+    - Stronger research
+
+--
+
+> "rOpenSci combines expertise and approachability, and its community inspires people to collaborate as the best versions of themselves."
+
+-- *[Will Landau](https://twitter.com/wmlandau/status/1030178221717946371), rOpenSci community member & `drake` developer*
+
+???
+
+Finally, we create the social infrastructure by putting together this fantastic community of people with really diverse social and professional backgrounds, all interested in making their work more reproducible and more open. By facilitating these relationships and creating a welcoming, friendly, approachable culture, we increase what we're able to produce and create more and stronger collaboration.
+
+I love this quote from Will Landau, who's the author of `drake`: "rOpenSci combines expertise and approachability, and its community inspires people to collaborate as the best versions of themselves." I saw Will tweet that to Stef Butland, our community manager, and he summed up my feelings so well that I asked if I could quote him!
+
+---
+
+# Info/Get Involved
+
+.left-column[
+```{r}
+knitr::include_graphics("images/ropensci_icon_short.png")
+
+```
+]
+
+.right-column[
+### [ropensci.org](https://ropensci.org)
+
+### [discuss.ropensci.org](https://discuss.ropensci.org)
+
+### [ropensci.org/packages](https://ropensci.org/packages)
+
+### Contribute a package via the<br>[onboarding process](http://onboarding.ropensci.org/)<br>or [sign up to review](https://ropensci.org/onboarding/)!
+
+### `r icon::fa("twitter")` [@ropensci](https://twitter.com/ropensci)
+]
+
+---
+
+class: middle
+
+# Thank you!
+
+.pull-left[
+#### `r icon::fa("slideshare")` bit.ly/something
+#### `r icon::fa("link")` [jenthompson.me](https://jenthompson.me)
+#### `r icon::fa("twitter")` [@jent103](https://twitter.com/jent103)
+#### `r icon::fa("envelope-open")` [thompson.jennifer@gmail.com](mailto:thompson.jennifer@gmail.com)
+]
+
+.pull-right[
+```{r}
+knitr::include_graphics("images/logan_fun.gif")
+```
+
+]
