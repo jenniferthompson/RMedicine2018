@@ -475,6 +475,10 @@ verification [creat_m &lt;= 10] failed! (1 failure)
 ```r
 monthly_df[5, c("study_id", "redcap_event_name", "creat_m")]
 ```
+```
+  study_id redcap_event_name creat_m
+5        3           Month 2      25
+```
 ]
 
 ???
@@ -541,6 +545,13 @@ newdf &lt;- monthly_df %&gt;%
 
 attr(newdf, "assertr_errors")
 ```
+```
+[[1]]
+verification [creat_m &lt;= 10] failed! (1 failure)
+
+    verb redux_fn     predicate column index value
+1 verify       NA creat_m &lt;= 10     NA     5    NA
+```
 
 ### Result: 😑
 
@@ -558,7 +569,7 @@ The tradeoff to this is that you do need to be paying attention: sink those erro
 
 # For More: [`assertr` tutorial](https://ropensci.org/tutorials/assertr_tutorial/)
 
-
+&lt;iframe src="https://ropensci.org/tutorials/assertr_tutorial/" width="100%" height="400px"&gt;&lt;/iframe&gt;
 
 ???
 
@@ -572,7 +583,7 @@ class: inverse, center, middle
 
 ???
 
-If your project is truly straightforward, just a bit of data wrangling and analysis, paying a lot of attention to your file structure and workflow may not have lots of payoff for you, but in my experience projects can get complex quickly. In this case, there are some powerful tools that can help us take advantage of that structure we worked on earlier.
+Now that we've tested our data, we're probably ready to perform our analysis and report our conclusions. If your project is truly straightforward, just a bit of data wrangling and analysis, paying a lot of attention to your file structure and workflow may not have lots of payoff for you, but in my experience projects can get complex quickly. In this case, there are some powerful tools that can help us take advantage of that structure we worked on earlier.
 
 ---
 
@@ -738,6 +749,28 @@ class: middle
 ![](images/logan_fun.gif)&lt;!-- --&gt;
 
 ]
+
+---
+
+class: inverse, middle, center
+
+BONUS SLIDES
+
+---
+
+background-image: url(images/leek_decisions.png)
+background-size: 85%
+background-position: 50% 90%
+
+# Jeff Leek Made This &lt;span style = "font-size: 50%;"&gt;[JSM 2018 talk](https://docs.google.com/presentation/d/1oCbf8NHpJSQAe6LoeD--wV-KbKbdGawrLHYJqwzfj_M/edit#slide=id.p)&lt;/span&gt;
+
+#### Or, Use RMarkdown to Record Your Decisions
+
+???
+
+I love this diagram from Jeff Leek so much:
+
+Saying "we did multivariable logistic regression" only tells the reader one of many, many decisions you made in your analysis, which can be affected by all kinds of factors as Jeff points out. So I'm starting off by encouraging you to use R's literate programming tools for not only reporting, but also for things like exploratory data analysis that informs your modeling decisions, or writing simulations that get summarized in your final report.
     </textarea>
 <script src="libs/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
