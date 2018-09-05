@@ -833,7 +833,7 @@ class: middle
 # Thank you!
 
 .pull-left[
-#### `r icon::fa("slideshare")` bit.ly/something
+#### `r icon::fa("slideshare")` [bit.ly/jlt-rmed2018](https://bit.ly/jlt-rmed2018)
 #### `r icon::fa("link")` [jenthompson.me](https://jenthompson.me)
 #### `r icon::fa("twitter")` [@jent103](https://twitter.com/jent103)
 #### `r icon::fa("envelope-open")` [thompson.jennifer@gmail.com](mailto:thompson.jennifer@gmail.com)
