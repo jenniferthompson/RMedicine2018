@@ -1,5 +1,5 @@
 ---
-title: "The Life & Times of a Reproducible Clinical Project"
+title: "The Life & Times of a Reproducible Clinical Project in R"
 author: "Jennifer L Thompson, MPH<br><span style = 'font-size: 50%;'>Vanderbilt University Medical Center<br>Department of Biostatistics + Center for Critical Illness, Brain Dysfunction & Survivorship</span>"
 date: 'R/Medicine 2018<br><br>`r icon::fa("link")` [bit.ly/jlt-rmed2018](https://bit.ly/jlt-rmed2018)<br>`r icon::fa("twitter")` [jent103](https://twitter.com/jent103)'
 output:
@@ -143,25 +143,24 @@ So the first thing I'll talk about is how to organize your project. This may fee
 ---
 
 background-image: url(images/filestructure.png)
-background-size: 35%
+background-size: 32%
 background-position: 15% 85%
 
-# Organized File Structure -> Happier Life
+# Organized Files, Happier Life
+### One project, one directory
 
 .pull-right[
+- Keep yourself organized
+- Allow someone else *(inc. your future self!)* to use your code
+- Reuse/adapt components for other projects
 
-Make it easy to
-
-1. Keep yourself organized
-2. Allow someone else *(including your future self!)* to use your code
-3. Reuse or adapt components for other projects
-
-Using [RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) and version control can help! Projects:
+**[RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) + version control can help!** Projects:
 
 - Allow >1 project open at once
-- Allow project-specific options
-- Encourage one project -> one directory philosophy
-- Facilitate use of [`packrat`](https://cran.r-project.org/package=packrat) and version control
+- Keep you in the right place
+- Encourage 1:1 philosophy
+- Facilitate [`packrat`](https://cran.r-project.org/package=packrat), version control
+- "Your life will be better [if you use Projects]" - *Mine Cętinkaya-Rundel, yesterday*
 ]
 
 ???
@@ -174,13 +173,13 @@ When things are organized well, it's not only calming, but makes things easier:
 - easier to recognize when you can reuse components for other projects
 - easier to actually reuse those components, because things are intentionally modular
 
-If you're an RStudio user, using Projects can be helpful here. The first reason I started using them was the ability to have more than one RStudio session open at once with no headaches. But now, I appreciate just as much that they encourage a "one project, one directory" mindset, since each analysis gets its own directory, which gets one project file. Even more helpful is that this is also the structure that works best with version control, and Projects have several features that help facilitate getting git or other version control set up.
+If you're an RStudio user, using Projects can be helpful here, as Mine mentioned yesterday. The first reason I started using them was the ability to have more than one RStudio session open at once with no headaches, and as Mine discussed yesterday, they can help make sure we're in the correct directory. They also encourage a "one project, one directory" mindset, since each analysis gets its own directory, which gets one project file. Even more helpful is that this is also the structure that works best with version control, and Projects have several features that help facilitate getting git or other version control set up.
 
 If you haven't yet drunk the version control Kool-Aid, I'll give you some very practical ways that it's helped me:
 
 ---
 
-# Reasons to Use Version Control <i class="fas fa-code-branch"></i>
+# Practical Reasons to Use Version Control `r icon::fa("code-branch")`
 
 1. Encourages modular thinking and organization
 1. Easier to know when and why something changed
@@ -349,7 +348,7 @@ monthly_df <- read.csv(
 
 ???
 
-- Next, these lines tell me exactly what data I exported - there's a **record** of exactly what we did. Here, I chose to export only the monthly data collection form, along with the patient ID that's collected on a separate form, and to export only the records related to our monthly data collection. It's clear to anyone coming after me what data I used to perform my next steps.
+- Next, these lines tell me exactly what data I exported - there's a **record** of exactly what we did. Here, I export the monthly data collection form, along with the patient ID that's collected on a separate form, and export only the records related to our monthly data collection. It's clear to anyone coming after me what data I used to perform my next steps.
 
 ---
 
@@ -381,7 +380,7 @@ monthly_df <- read.csv(
 
 ???
 
-- Finally, using APIs can sometimes give you **flexibility**. This last line in the `httr` call gives an example of an option you can give REDCap using the API - here I'm telling it I want text labels for categorical variables and not the numeric codes, but there may be times when you want the opposite. You can choose based on your needs for any given export.
+- Finally, depending on your data capture system, using APIs can sometimes give you **flexibility**. This last line in the `httr` call gives an example of an option you can give REDCap using the API - here I'm telling it I want text labels for categorical variables and not the numeric codes, but there may be times when you want the opposite. You can choose based on your needs for any given export.
 
 ---
 
@@ -394,12 +393,12 @@ Once the initial script or report is built, we can - **with one line of code*** 
     - NIH or DSMB reports
     - Study monitoring (We [use `flexdashboards`](https://jenthompson.me/2018/02/09/flexdashboards-monitoring/))
         - Are you executing the study you planned to do?
-        - Enrollment targets, protocol pain points, etc?
+        - Enrollment targets, protocol pain points...
 
-### Resources for Working with APIs
+### API Resources
 
-- [`httr`](https://cran.r-project.org/package=httr), for general API work
-- [`redcapAPI`](https://cran.r-project.org/package=redcapAPI) by Benjamin Nutter
+- General: [`httr`](https://cran.r-project.org/package=httr); [intro to APIs by Lucy D'Agostino McGowan](http://bit.ly/lucystats-jsm2018)
+- [REDCap](https://projectredcap.org/): [`redcapAPI`](https://cran.r-project.org/package=redcapAPI) (Benjamin Nutter), [`REDCapR`](https://ouhscbbmc.github.io/REDCapR/) (Will Beasley)
 - [ropensci.org/packages](https://ropensci.org/packages/) for specific web APIs
 
 ???
@@ -465,9 +464,9 @@ We can also do this after doing some data management, to make sure our raw data 
 ```{r, echo = TRUE, eval = FALSE}
 library(assertr)
 
-## Creatinine must be <=10
+## Creatinine must be <=20
 monthly_df %>%
-  verify(creat_m <= 10)
+  verify(creat_m <= 20)
   
 ```
 
@@ -481,10 +480,10 @@ Pipeline stops and prints an informative message
 
 .right-column[
 ```
-verification [creat_m <= 10] failed! (1 failure)
+verification [creat_m <= 20] failed! (1 failure)
 
     verb redux_fn     predicate column index value
-1 verify       NA creat_m <= 10     NA     5    NA
+1 verify       NA creat_m <= 20     NA     5    NA
 ```
 ```{r, echo = TRUE}
 monthly_df[5, c("study_id", "redcap_event_name", "creat_m")]
@@ -497,13 +496,13 @@ monthly_df[5, c("study_id", "redcap_event_name", "creat_m")]
 
 ???
 
-In our example study, we believe that any creatinine above 10 must be some kind of data issue. So we use `assertr`'s `verify` function at the beginning of a data management pipeline to "verify" that that assumption is true. If that condition is met, the function will return the original data.frame, and we can continue with our data management.
+In our example study, we believe that any creatinine above 20 must be some kind of data issue. So we use `assertr`'s `verify` function at the beginning of a data management pipeline to "verify" that that assumption is true. If that condition is met, the function will return the original data.frame, and we can continue with our data management.
 
 Of course, this being an example, the condition is *not* met. `verify` throws an error and stops our pipeline in its tracks, and prints a message showing us that the fifth row in our data.frame violates this assumption. In this case, my most likely guess is that someone forgot a decimal point. We can work with the PI or the data entry team to resolve the issue. Once it's resolved and we're using the updated data, this same pipeline will run with no issue.
 
 One note: If you're not a pipeline user, `assertr` certainly works with base R as well! It's built to work nicely within pipelines but you can use it no matter your preference.
 
-`verify(monthly_df, is.na(creat_m) | creat_m <= 10)`
+`verify(monthly_df, is.na(creat_m) | creat_m <= 20)`
 
 ---
 
@@ -556,17 +555,17 @@ Here, our assertion discovers no problems, and we can continue with confidence.
 ```{r, echo = TRUE}
 ## Maybe it's OK if creatinine is super high
 newdf <- monthly_df %>%
-  verify(creat_m <= 10, error_fun = error_append) #<<
+  verify(creat_m <= 20, error_fun = error_append) #<<
 
 attr(newdf, "assertr_errors")
   
 ```
 ```
 [[1]]
-verification [creat_m <= 10] failed! (1 failure)
+verification [creat_m <= 20] failed! (1 failure)
 
     verb redux_fn     predicate column index value
-1 verify       NA creat_m <= 10     NA     5    NA
+1 verify       NA creat_m <= 20     NA     5    NA
 ```
 
 ### Result: `r emo::ji("expressionless_face")`
