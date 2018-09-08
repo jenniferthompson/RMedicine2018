@@ -57,7 +57,7 @@ mono_light(
 
 ???
 
-This is my informal definition for what we mean by computational reproducibility, which is, of course, a hot topic, and for good reason. We all want the work we do to be both meaningful and correct, and want to be able to discern whether other research is trustworthy. Others, including some in this audience, have done a ton of work to develop philosophies and tools to encourage reproducibility.
+This is my informal definition for what we mean by computational reproducibility, which is. We all want the work we do to be both meaningful and correct, and want to be able to discern whether other research is trustworthy. Reproducible practices like sharing organized code scripts can help us with that.
 
 ---
 
@@ -87,7 +87,7 @@ True story: Someone asked me last month for a script I started writing in 2009
 
 Even worse: This script was related to a project with five different data sources and multiple data management scripts
 
-Past me was not living her most reproducible life :( - she had not considered this scenario nine years ago when starting this project. Current me is a bit more experienced and knows to expect the unexpected.
+Past me was not living her most reproducible life :( - she had not considered this scenario nine years ago when starting this project, and it was a bit of a mess. Current me is a bit more experienced and knows to expect the unexpected.
 
 All these tools we'll talk about today benefit from **forethought** - the more we can think ahead, the better off we'll be.
 
@@ -112,7 +112,7 @@ knitr::include_graphics("images/rory_darknessdragons.gif")
 
 ???
 
-I love this quote from Julie Lowndes - a bit of forethought and planning can bring so much future benefit.
+I love this quote from Julie Lowndes - reproducibility is partially about making life easier for our future selves.
 
 But sometimes we may feel a bit like Rory Gilmore in her first semester here at Yale, maybe that it's a little overwhelming to think years from now when you have an abstract deadline next week.
 
@@ -128,7 +128,7 @@ Demonstrate several R tools & practices which can help us not only improve our s
 
 ???
 
-BUT! We can use these tools incrementally or all together - anything we do will help, and I've learned this from my own experience. My goal today: show you how these tools built for increasing the level or ease of reproducibility have been helpful in my work in clinical research. Your goal: Take what applies to and interests you and mold it to your own life (then share those ideas so we can learn from you!). Some of you may be using some or all of these tools, but hopefully we can all learn at least one new thing!
+BUT! We can use these tools incrementally or all together - anything we do will help, and I've learned this from my own experience. My goal today: show you how these tools built for increasing the level or ease of reproducibility have been helpful in my work in clinical research. Your goal: Take what applies to and interests you and mold it to your own life (then share those ideas so we can learn from you!). Some of you may be using some or all of these tools, but hopefully we can all learn at least one new thing! I am kind of assuming that everyone is aware of and using literate programming tools like RMarkdown; if you're not, come talk to me later and I'm happy to try to convince you. :)
 
 ---
 
@@ -179,7 +179,7 @@ If you haven't yet drunk the version control Kool-Aid, I'll give you some very p
 
 ---
 
-# Practical Reasons to Use Version Control `r icon::fa("code-branch")`
+# Why You, a <span style = "font-size: 80%;">`[data person]`</span>, Should Use Version Control `r icon::fa("code-branch")`
 
 1. Encourages modular thinking and organization
 1. Easier to know when and why something changed
@@ -206,9 +206,9 @@ background-image: url(images/usethis_hex.png)
 background-size: 15%
 background-position: 95% 5%
 
-# Use `usethis` for This
+# Use <span style = "font-size: 80%;">`usethis`</span> for This
 
-`usethis` is particularly helpful for creating R packages, but has<br>
+[`usethis`](http://usethis.r-lib.org/) is particularly helpful for creating R packages, but has<br>
 plenty of functions that will help you set up a general project:
 
 - Projects (`create_project()`)
@@ -216,20 +216,19 @@ plenty of functions that will help you set up a general project:
 - git and GitHub (`use_git()`, `use_github()`)
 - And more!
 
-Bonus points if you use `usethis` to turn your project into a fully transportable package!
-
-[`usethis.r-lib.org`](http://usethis.r-lib.org/)
-<span style = "font-size: 75%;">*(authors: Hadley Wickham, Jenny Bryan)*</span>
+Bonus points: Use `usethis` to turn your project into a fully transportable package!
 
 #### **And also read these: Jenny Bryan on**
 
 - [Project-oriented workflow](https://www.tidyverse.org/articles/2017/12/workflow-vs-script/)
 - [Naming things](https://speakerdeck.com/jennybc/how-to-name-files)
-- [Version control](https://peerj.com/preprints/3159/)
+- Version control:
+    - ["Excuse me, do you have a moment to talk about version control?"](https://peerj.com/preprints/3159/)
+    - [Happy Git with R](http://happygitwithr.com/) *with STAT545 TAs*
 
 ???
 
-The `usethis` package is basically built to make setting up all of these details, like git repositories and file structures, a bit easier. Particularly with git, and particularly if you're collaborating, it can be easy to mess this up by doing things in an order that isn't ideal, for example (I know this from personal experience). And `usethis` is particularly helpful if you build R packages, as it really shines when setting up things like documentation and licensing.
+The `usethis` package is basically built to make setting up all of these details, like git repositories and file structures, a bit easier. Especially with git, getting set up can be a little tricky, for example (I know this from personal experience). And `usethis` is particularly helpful if you build R packages, as it really shines when setting up things like documentation and licensing.
 
 And of course, read anything Jenny Bryan has written on these topics.
 
@@ -316,7 +315,7 @@ My toy example here is from a longitudinal study where we had a baseline visit; 
 
 If you use a different data capture system your code might look a bit different. My goal is less about the specifics of the code than to demonstrate some key points:
 
-- First, this is more secure than passing around even password-protected  Excel spreadsheets, since you need an individualized API token to access the database; I usually store my token in my .Renviron file so that I can share the extraction code freely as needed without compromising security.
+- First, this is more secure than passing around even password-protected Excel spreadsheets, since you need an individualized API token to access the database; many of us here work with PHI, so obviously this is a concern. I usually store my token in my .Renviron file so that I can share the extraction code freely as needed without compromising security.
 
 ---
 
@@ -380,7 +379,7 @@ monthly_df <- read.csv(
 
 ???
 
-- Finally, depending on your data capture system, using APIs can sometimes give you **flexibility**. This last line in the `httr` call gives an example of an option you can give REDCap using the API - here I'm telling it I want text labels for categorical variables and not the numeric codes, but there may be times when you want the opposite. You can choose based on your needs for any given export.
+- Finally, depending on your data capture system, using APIs can give you **flexibility**. This last line in the `httr` call gives an example of an option you can give REDCap using the API - here I'm telling it I want text labels for categorical variables and not the numeric codes, but there may be times when you want the opposite. You can choose based on your needs for any given export.
 
 ---
 
@@ -408,7 +407,7 @@ Once we're using the API to export data, the world is our oyster - we don't have
 - Working with our research coordinators to clean our prospectively collected data every few months. There's a tutorial for our process linked from my web site if you're interested in that.
 - Generate a lot of repeated analyses and reports throughout the study process - things like NIH progress reports or DSMB reports. We also use the `flexdashboard` format of RMarkdown to monitor our studies, making sure we're hitting enrollment targets and looking for potential pain points with protocol aspects like wearing devices or drawing blood. Again, I can run those reports once a week with one line of code, assured that it's current with the database.
 
-If you're new to working with APIs, the `httr` package has some great vignettes; if you do use REDCap, Benjamin Nutter has written a wrapper package specifically for the REDCap API. If you're using other sources of web data, rOpenSci has a collection of packages for working with APIs that you should investigate.
+If you're new to working with APIs, the `httr` package has some great vignettes; if you do use REDCap, there are at least two packages specifically for working with that API. If you're using other sources of web data, rOpenSci has a collection of packages for working with APIs that you should investigate.
 
 ---
 
@@ -422,7 +421,7 @@ Once our data is in our hands, we want to make sure it reflects our understandin
 
 ---
 
-# Testing Data with `assertr`
+# Testing Data with <span style = "font-size: 80%;">`assertr`</span>
 
 .pull-left[
 
@@ -451,9 +450,9 @@ With [`assertr`](https://github.com/ropensci/assertr) *(author: Tony Fischetti)*
 
 ???
 
-Hopefully I'm not the only who's had this experience: You've done your data wrangling, everything looks OK, and then one day someone asks the exact right question that allows you to uncover a mistake you made.
+Hopefully I'm not the only one who's had this experience: You've done your data wrangling, everything looks OK, and then one day someone asks the exact right question that allows you to uncover a mistake you made.
 
-The `assertr` package helps us avoid this by providing ways to proactively make **assertions** about our data. We can do this when reading in raw data, to make sure we understand the data we're dealing with and that the data fits the conventions we've established - for example, maybe you have multiple spreadsheets from different sites, and some use 0/1 coding while others use No/Yes coding.
+The `assertr` package helps us avoid this by providing ways to proactively make **assertions** about our data. We can do this when reading in raw data, to make sure we understand the data we're dealing with and that the data fits the conventions we've established.
 
 We can also do this after doing some data management, to make sure our raw data and our code are working together as well as we'd expect. Using these assertions can help us discover special cases or unmet assumptions earlier.
 
@@ -582,7 +581,7 @@ The tradeoff to this approach is that you do need to be paying attention somehow
 
 ---
 
-# For More: [`assertr` tutorial](https://ropensci.org/tutorials/assertr_tutorial/)
+# For More: <span style = "font-size: 80%;">`assertr`</span> [tutorial](https://ropensci.org/tutorials/assertr_tutorial/)
 
 ```{r, eval = TRUE}
 knitr::include_url("https://ropensci.org/tutorials/assertr_tutorial/")

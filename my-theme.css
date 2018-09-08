@@ -13,9 +13,9 @@ div.my-footer {
     width: 100%;
 }
 div.my-footer span {
-    font-size: 12pt;
-    color: #989d9e;
+    font-size: 14pt;
+    color: #125972;
     position: absolute;
-    left: 15px;
+    left: 20px;
     bottom: 10px;
 }
